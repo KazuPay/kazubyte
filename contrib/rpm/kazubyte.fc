@@ -1,0 +1,8 @@
+/usr/bin/kazubyte-cli		--	gen_context(system_u:object_r:kazubyte_exec_t,s0)
+/usr/sbin/kazubyted		--	gen_context(system_u:object_r:kazubyte_exec_t,s0)
+/usr/lib(64)?/kazubyte/kazubyted		--	gen_context(system_u:object_r:kazubyte_exec_t,s0)
+
+/etc/kazubyte(/.*)?		gen_context(system_u:object_r:kazubyte_conf_t,s0)
+/var/lib/kazubyte(/.*)?		gen_context(system_u:object_r:kazubyte_var_lib_t,s0)
+
+(/var)?/run/kazubyted(/.*)?   gen_context(system_u:object_r:kazubyte_var_run_t,s0)

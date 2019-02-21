@@ -1,0 +1,33 @@
+# /etc/conf.d/kazubyted: config file for /etc/init.d/kazubyted
+
+# Config file location
+#KBYTECOIND_CONFIGFILE="/etc/kazubyte/kazubyte.conf"
+
+# What directory to write pidfile to?  (created and owned by $KBYTECOIND_USER)
+#KBYTECOIND_PIDDIR="/var/run/kazubyted"
+
+# What filename to give the pidfile
+#KBYTECOIND_PIDFILE="${KBYTECOIND_PIDDIR}/kazubyted.pid"
+
+# Where to write kazubyted data (be mindful that the blockchain is large)
+#KBYTECOIND_DATADIR="/var/lib/kazubyted"
+
+# User and group to own kazubyted process
+#KBYTECOIND_USER="kazubyte"
+#KBYTECOIND_GROUP="kazubyte"
+
+# Path to kazubyted executable
+#KBYTECOIND_BIN="/usr/bin/kazubyted"
+
+# Nice value to run kazubyted under
+#KBYTECOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+KBYTECOIND_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for kazubyted to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+KBYTECOIND_SIGTERM_TIMEOUT=60

@@ -1,0 +1,81 @@
+policy_module(kazubyte, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type kazubyte_t;
+type kazubyte_exec_t;
+init_daemon_domain(kazubyte_t, kazubyte_exec_t)
+
+permissive kazubyte_t;
+
+type kazubyte_initrc_exec_t;
+init_script_file(kazubyte_initrc_exec_t)
+
+type kazubyte_conf_t;
+files_type(kazubyte_conf_t)
+
+type kazubyte_var_lib_t;
+files_type(kazubyte_var_lib_t)
+
+type kazubyte_var_run_t;
+files_type(kazubyte_var_run_t)
+
+type kazubyte_port_t;
+corenet_port(kazubyte_port_t)
+
+########################################
+#
+# kazubyte local policy
+#
+allow kazubyte_t self:process { fork };
+
+allow kazubyte_t self:fifo_file rw_fifo_file_perms;
+allow kazubyte_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(kazubyte_t, kazubyte_conf_t, kazubyte_conf_t)
+manage_files_pattern(kazubyte_t, kazubyte_conf_t, kazubyte_conf_t)
+
+manage_dirs_pattern(kazubyte_t, kazubyte_var_lib_t, kazubyte_var_lib_t)
+manage_files_pattern(kazubyte_t, kazubyte_var_lib_t, kazubyte_var_lib_t)
+files_var_lib_filetrans(kazubyte_t, kazubyte_var_lib_t, { dir file })
+
+manage_dirs_pattern(kazubyte_t, kazubyte_var_run_t, kazubyte_var_run_t)
+manage_files_pattern(kazubyte_t, kazubyte_var_run_t, kazubyte_var_run_t)
+
+sysnet_dns_name_resolve(kazubyte_t)
+corenet_all_recvfrom_unlabeled(kazubyte_t)
+
+allow kazubyte_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(kazubyte_t)
+corenet_tcp_sendrecv_generic_node(kazubyte_t)
+corenet_tcp_sendrecv_all_ports(kazubyte_t)
+corenet_tcp_bind_generic_node(kazubyte_t)
+
+gen_require(`
+    type kazubyte_port_t;
+')
+allow kazubyte_t kazubyte_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type kazubyte_port_t;
+')
+allow kazubyte_t kazubyte_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(kazubyte_t)
+
+files_read_etc_files(kazubyte_t)
+
+miscfiles_read_localization(kazubyte_t)
+
+sysnet_dns_name_resolve(kazubyte_t)
+
+allow kazubyte_t kazubyte_exec_t:file execute_no_trans;
+allow kazubyte_t self:process setsched;
+corecmd_exec_ls(kazubyte_t)
+corenet_tcp_connect_http_port(kazubyte_t)
+dev_read_urand(kazubyte_t)
+fs_getattr_xattr_fs(kazubyte_t)
+kernel_read_system_state(kazubyte_t)

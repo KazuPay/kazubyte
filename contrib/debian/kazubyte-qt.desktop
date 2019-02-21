@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=KazuByte
+Comment=KazuByte P2P Cryptocurrency
+Comment[fr]=KazuByte, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=KazuByte, eşten eşe kriptografik sanal para birimi
+Exec=kazubyte-qt %u
+Terminal=false
+Type=Application
+Icon=kazubyte128
+MimeType=x-scheme-handler/kazubyte;
+Categories=Office;Finance;

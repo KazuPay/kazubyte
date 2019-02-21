@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/kazubyte/.kazubyte" ]; then
+	KBYTECOIND_DEFAULT_DATADIR="/var/lib/kazubyte/.kazubyte"
+else
+	KBYTECOIND_DEFAULT_DATADIR="/var/lib/kazubyted"
+fi
+
+KBYTECOIND_CONFIGFILE=${KBYTECOIND_CONFIGFILE:-/etc/kazubyte/kazubyte.conf}
+KBYTECOIND_PIDDIR=${KBYTECOIND_PIDDIR:-/var/run/kazubyted}
+KBYTECOIND_PIDFILE=${KBYTECOIND_PIDFILE:-${KBYTECOIND_PIDDIR}/kazubyted.pid}
+KBYTECOIND_DATADIR=${KBYTECOIND_DATADIR:-${KBYTECOIND_DEFAULT_DATADIR}}
+KBYTECOIND_USER=${KBYTECOIND_USER:-${KBYTECOIN_USER:-kazubyte}}
+KBYTECOIND_GROUP=${KBYTECOIND_GROUP:-kazubyte}
+KBYTECOIND_BIN=${KBYTECOIND_BIN:-/usr/bin/kazubyted}
+KBYTECOIND_NICE=${KBYTECOIND_NICE:-${NICELEVEL:-0}}
+KBYTECOIND_OPTS="${KBYTECOIND_OPTS:-${KBYTECOIN_OPTS}}"
+
+name="KazuByte Core Daemon"
+description="KazuByte cryptocurrency P2P network daemon"
+
+command="/usr/bin/kazubyted"
+command_args="-pid=\"${KBYTECOIND_PIDFILE}\" \
+		-conf=\"${KBYTECOIND_CONFIGFILE}\" \
+		-datadir=\"${KBYTECOIND_DATADIR}\" \
+		-daemon \
+		${KBYTECOIND_OPTS}"
+
+required_files="${KBYTECOIND_CONFIGFILE}"
+start_stop_daemon_args="-u ${KBYTECOIND_USER} \
+			-N ${KBYTECOIND_NICE} -w 2000"
+pidfile="${KBYTECOIND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${KBYTECOIND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${KBYTECOIND_USER}:${KBYTECOIND_GROUP}" \
+	"${KBYTECOIND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${KBYTECOIND_USER}:${KBYTECOIND_GROUP}" \
+	"${KBYTECOIND_PIDDIR}"
+
+	checkpath -f \
+	-o ${KBYTECOIND_USER}:${KBYTECOIND_GROUP} \
+	-m 0660 \
+	${KBYTECOIND_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${KBYTECOIND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run kazubyted."
+		eerror "The setting must appear in ${KBYTECOIND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"KazuByte Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

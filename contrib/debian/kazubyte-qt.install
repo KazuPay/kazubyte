@@ -1,0 +1,6 @@
+usr/local/bin/kazubyte-qt usr/bin
+share/pixmaps/kazubyte32.xpm usr/share/pixmaps
+share/pixmaps/kazubyte16.xpm usr/share/pixmaps
+share/pixmaps/kazubyte128.png usr/share/pixmaps
+debian/kazubyte-qt.desktop usr/share/applications
+debian/kazubyte-qt.protocol usr/share/kde4/services/

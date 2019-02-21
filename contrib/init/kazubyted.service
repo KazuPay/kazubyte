@@ -1,0 +1,22 @@
+[Unit]
+Description=KazuByte's distributed currency daemon
+After=network.target
+
+[Service]
+User=kazubyte
+Group=kazubyte
+
+Type=forking
+PIDFile=/var/lib/kazubyted/kazubyted.pid
+ExecStart=/usr/bin/kazubyted -daemon -pid=/var/lib/kazubyted/kazubyted.pid \
+-conf=/etc/kazubyte/kazubyte.conf -datadir=/var/lib/kazubyted -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

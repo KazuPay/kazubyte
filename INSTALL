@@ -1,0 +1,5 @@
+Building KazuByte
+
+See doc/build-*.md for instructions on building kazubyted,
+the intended-for-services, no-graphical-interface, reference
+implementation of KazuByte.
